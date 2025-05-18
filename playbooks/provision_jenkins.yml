@@ -40,6 +40,11 @@
         image: docker:dind
         #volume_driver: overlay2 default on linux
 
+    - name: build jenkins images in dockerfiles remote_src at /tmp/dockerfiles
+      ansible.builtin.shell:
+        cmd: docker build -t myjenkins-blueocean:2.504.1-1 -f Dockerfile_jenkins .
+        chdir: /tmp/dockerfiles
+
 
 
 
