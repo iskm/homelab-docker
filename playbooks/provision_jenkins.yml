@@ -45,6 +45,25 @@
         cmd: docker build -t myjenkins-blueocean:2.504.1-1 -f Dockerfile_jenkins .
         chdir: /tmp/dockerfiles
 
+    - name: run jenkins container with specific settings
+      community.docker.docker_container:
+        name: jenkins-blueocean
+        restart: true
+        restart_policy: on-failure
+        detach: true
+        networks:
+          - name: jenkins
+        env:
+          DOCKER_CERT_PATH=/certs/client
+          DOCKER_TLS_VERIFY=1
+        volumes:
+          - jenkins-docker-certs:/certs/client:ro
+          - jenkins-data:/var/jenkins_home
+        published_ports:
+          - 8080:8080
+          - 50000:50000
+        image: myjenkins-blueocean:2.504.1-1
+        #volume_driver: overlay2 default on linux
 
 
 
