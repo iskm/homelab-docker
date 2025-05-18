@@ -1,0 +1,21 @@
+- name: provision gitlab on docker
+  hosts: miniserver
+  become: true
+  vars:
+    images:
+      - gitlab/gitlab-ee:18.0.0-ee.0
+  tasks:
+    - name: copy all dockerfiles to remote machine(s)
+      ansible.builtin.copy:
+        src: ../composefiles
+        dest: /tmp/
+
+    - name: pull gitlab/gitlab-ee:18.0.0-ee.0 image prior to running it
+      community.docker.docker_image_pull:
+        name: "{{ item  }}"
+      loop: "{{ images }}"
+
+    - name: build jenkins images in dockerfiles remote_src at /tmp/dockerfiles
+      ansible.builtin.shell:
+        cmd: docker compose -f docker-compose-gitlab.yml up -d
+        chdir: /tmp/composefiles
