@@ -1,0 +1,45 @@
+- name: provision jenkins on docker
+  hosts: miniserver
+  become: true
+  vars:
+    images:
+      - docker:dind
+      - jenkins/jenkins:2.504.1-jdk21
+  tasks:
+    - name: copy all dockerfiles to remote machine(s)
+      ansible.builtin.copy:
+        src: ../dockerfiles
+        dest: /tmp/
+
+    - name: create "jenkins" network per documentation
+      community.docker.docker_network:
+        name: jenkins
+
+    - name: pull docker:dind image prior to running it
+      community.docker.docker_image_pull:
+        name: "{{ item  }}"
+      loop: "{{ images }}"
+
+    - name: run jenkins container with specific settings
+      community.docker.docker_container:
+        name: jenkins-docker
+        detach: true
+        auto_remove: true
+        privileged: true
+        networks:
+          - name: jenkins
+            aliases:
+              - docker
+        env:
+          DOCKER_TLS_CERTDIR=/certs
+        volumes:
+          - jenkins-docker-certs:/certs/client
+          - jenkins-data:/var/jenkins_home
+        published_ports:
+          - 2376:2376
+        image: docker:dind
+        #volume_driver: overlay2 default on linux
+
+
+
+
