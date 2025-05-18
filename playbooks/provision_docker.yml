@@ -1,0 +1,21 @@
+- name: Provisions docker on a VM
+  hosts: miniserver
+  become: true
+  vars:
+    docker_edition: 'ce'
+    docker_service_manage: true
+    docker_service_enabled: true
+    docker_service_state: started
+    docker_restart_handler_state: restarted
+    docker_install_compose_plugin: true
+    docker_compose_package: docker-compose-plugin
+    docker_compose_package_state: present
+    docker_add_repo: true
+    docker_users:
+      - ansible
+    pip_install_packages:
+      - name: docker
+
+  roles:
+    - geerlingguy.docker
+    - geerlingguy.pip
