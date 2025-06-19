@@ -1,0 +1,4 @@
+FROM jenkins/inbound-agent@sha256:e2899bebdb224335d90a751dcf79ff3c2e716b41b101af74ed3f8b70c4ca0daa
+USER root
+RUN apt-get update && apt-get install -y ansible git curl build-essential 
+USER jenkins
